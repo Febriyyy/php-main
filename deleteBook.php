@@ -1,10 +1,13 @@
 <?php
+include 'variable.php';
+$variant = variable();
+
 if (isset($_GET['book_id'])) {
 
-    $servername = "localhost";
-    $username = "ibrahim";
-    $password = "12345678";
-    $dbname = "library_db";
+  $servername = $variant[0];
+  $username = $variant[1];
+  $password = $variant[2];
+  $dbname = $variant[3];
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -22,6 +25,7 @@ if (isset($_GET['book_id'])) {
     echo "Error deleting record: " . $conn->error;
     }
     $conn->close();
+    
 ?>
 <!doctype html>
 <html lang="en">
@@ -31,6 +35,7 @@ if (isset($_GET['book_id'])) {
     <title>Perpustakaan</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style/delete.css" rel="stylesheet">
 
     <style>
       .bd-placeholder-img {

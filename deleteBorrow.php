@@ -2,17 +2,29 @@
 include 'variable.php';
 $variant = variable();
 
-$servername = $variant[0];
-$username = $variant[1];
-$password = $variant[2];
-$dbname = $variant[3];
+if (isset($_GET['borrow_id'])) {
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+  $servername = $variant[0];
+  $username = $variant[1];
+  $password = $variant[2];
+  $dbname = $variant[3];
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "DELETE FROM borrow WHERE borrow_id = ".$_GET['borrow_id'];
+    $result = $conn->query($sql);
+
+    if ($conn->query($sql) === TRUE) {
+    echo "borrow deleted successfully";
+    } else {
+    echo "Error deleting borrow: " . $conn->error;
+    }
+    $conn->close();
 
 ?>
 <!doctype html>
@@ -23,6 +35,7 @@ if ($conn->connect_error) {
     <title>Perpustakaan</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style/delete.css" rel="stylesheet">
 
     <style>
       .bd-placeholder-img {
@@ -86,47 +99,10 @@ if ($conn->connect_error) {
 <div class="container">
   <main>
     <div class="py-5 text-center">
-      <h2>Pinjam buku</h2>
-      <p class="lead">Silakan isi data buku dan peminjam yang akan dimasukkan ke database.</p>
+      <h2>Menghapus data buku pinjaman</h2>
+      <p class="lead">Buku pinjaman berhasil dihapus</p>
     </div>
 
-    <div class="row g-5">
-      <div class="col-md-12 col-lg-12">
-        <h4 class="mb-3">Data Peminjaman</h4>
-        <form class="needs-validation" novalidate method="post" action="addBorrow.php">
-          <div class="row g-3">
-            <div class="col-12">
-              <label for="book_id" class="form-label">Buku</label>
-                <select name="book_id" id="book_id">
-                    <?php
-                    $sql = "SELECT * FROM book";
-                    $result = $conn->query($sql);
-
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value=".$row['book_id'].">".$row['title']."</option>";
-                    }
-                    ?>
-                </select>
-            </div>
-
-            <div class="col-12">
-              <label for="member_id" class="form-label">Peminjam</label>
-                <select name="member_id" id="member_id">
-                    <?php
-                    $sql = "SELECT * FROM member";
-                    $result = $conn->query($sql);
-
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value=".$row['member_id'].">".$row['first_name']."</option>";
-                    }
-                    ?>
-                </select>
-            </div>
-
-          <button class="w-100 btn btn-primary btn-lg" type="submit">Pinjam buku</button>
-        </form>
-      </div>
-    </div>
   </main>
 
   <footer class="my-5 pt-5 text-muted text-center text-small">
@@ -144,4 +120,9 @@ if ($conn->connect_error) {
 
       <script src="form-validation.js"></script>
   </body>
+<?php
+} else {
+    echo "Invalid borrow_id!";
+}
+?>
 </html>

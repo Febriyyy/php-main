@@ -2,18 +2,37 @@
 include 'variable.php';
 $variant = variable();
 
-$servername = $variant[0];
-$username = $variant[1];
-$password = $variant[2];
-$dbname = $variant[3];
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    $first_name = $last_name = $email = "";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    $servername = $variant[0];
+    $username = $variant[1];
+    $password = $variant[2];
+    $dbname = $variant[3];
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT member_id, first_name, last_name, email FROM member WHERE member_id = ".$_GET['member_id'];
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        // output data of each row
+        while($row = $result->fetch_assoc()) {
+            $first_name = $row['first_name'];
+            $last_name = $row['last_name'];
+            $email = $row['email'];
+        }
+    } else {
+        echo "0 results";
+    }
+
+    $conn->close();
 }
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -86,44 +105,44 @@ if ($conn->connect_error) {
 <div class="container">
   <main>
     <div class="py-5 text-center">
-      <h2>Pinjam buku</h2>
-      <p class="lead">Silakan isi data buku dan peminjam yang akan dimasukkan ke database.</p>
+      <h2>Menyunting Buku</h2>
+      <p class="lead">Silakan isi data buku yang akan diperbaharui di database.</p>
     </div>
 
     <div class="row g-5">
+      <!-- <div class="col-md-5 col-lg-4 order-md-last"></div> -->
       <div class="col-md-12 col-lg-12">
-        <h4 class="mb-3">Data Peminjaman</h4>
-        <form class="needs-validation" novalidate method="post" action="addBorrow.php">
+        <h4 class="mb-3">Data Buku</h4>
+        <form class="needs-validation" novalidate method="post" action="editMember.php">
           <div class="row g-3">
             <div class="col-12">
-              <label for="book_id" class="form-label">Buku</label>
-                <select name="book_id" id="book_id">
-                    <?php
-                    $sql = "SELECT * FROM book";
-                    $result = $conn->query($sql);
-
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value=".$row['book_id'].">".$row['title']."</option>";
-                    }
-                    ?>
-                </select>
+              <input type="text" name="member_id" value="<?php echo $_GET['member_id']; ?>" hidden>
+              <label for="first_name" class="form-label">Nama depan</label>
+              <input type="text" name="first_name" class="form-control" id="first_name" value="<?php echo $first_name ?>" required>
+              <div class="invalid-feedback">
+                Masukkan nama depan yang valid.
+              </div>
             </div>
 
             <div class="col-12">
-              <label for="member_id" class="form-label">Peminjam</label>
-                <select name="member_id" id="member_id">
-                    <?php
-                    $sql = "SELECT * FROM member";
-                    $result = $conn->query($sql);
-
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value=".$row['member_id'].">".$row['first_name']."</option>";
-                    }
-                    ?>
-                </select>
+              <label for="last_name" class="form-label">Name belakang</label>
+              <div class="input-group has-validation">
+                <input type="text" name="last_name" class="form-control" id="last_name" value="<?php echo $last_name ?>" required>
+              <div class="invalid-feedback">
+                Masukkan nama belakang.
+                </div>
+              </div>
             </div>
 
-          <button class="w-100 btn btn-primary btn-lg" type="submit">Pinjam buku</button>
+            <div class="col-12">
+              <label for="email" class="form-label">Email</label>
+              <input type="text" name="email" value="<?php echo $email ?>" class="form-control" id="email" required>
+              <div class="invalid-feedback">
+                Masukkan email.
+              </div>
+            </div>
+
+          <button class="w-100 btn btn-primary btn-lg" type="submit">Update data</button>
         </form>
       </div>
     </div>

@@ -3,7 +3,7 @@ include 'variable.php';
 $variant = variable();
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $title = $author = $published_date = "";
+    $book_id = $member_id = $status = "";
 
     $servername = $variant[0];
     $username = $variant[1];
@@ -17,15 +17,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT book_id, title, author, published_date FROM book WHERE book_id = ".$_GET['book_id'];
+    $sql = "SELECT borrow_id, book_id, member_id, status FROM borrow WHERE borrow_id = ".$_GET['borrow_id'];
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         // output data of each row
         while($row = $result->fetch_assoc()) {
-            $title = $row['title'];
-            $author = $row['author'];
-            $published_date = $row['published_date'];
+            $book_id = $row['book_id'];
+            $member_id = $row['member_id'];
+            $status = $row['status'];
         }
     } else {
         echo "0 results";
@@ -113,36 +113,40 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
       <!-- <div class="col-md-5 col-lg-4 order-md-last"></div> -->
       <div class="col-md-12 col-lg-12">
         <h4 class="mb-3">Data Buku</h4>
-        <form class="needs-validation" novalidate method="post" action="editBook.php">
+        <form class="needs-validation" novalidate method="post" action="editBorrow.php">
           <div class="row g-3">
             <div class="col-12">
-              <input type="text" name="book_id" value="<?php echo $_GET['book_id']; ?>" hidden>
-              <label for="title" class="form-label">Judul</label>
-              <input type="text" name="title" class="form-control" id="title" value="<?php echo $title ?>" required>
+              <input type="text" name="borrow_id" value="<?php echo $_GET['borrow_id']; ?>" hidden>
+
+              <label for="book_id" class="form-label">ID buku</label>
+              <input type="text" name="book_id" class="form-control" id="book_id" value="<?php echo $book_id ?>" required>
               <div class="invalid-feedback">
-                Masukkan judul buku yang valid.
+                Masukkan ID buku.
               </div>
             </div>
 
             <div class="col-12">
-              <label for="author" class="form-label">Penulis</label>
+              <label for="member_id" class="form-label">ID member</label>
               <div class="input-group has-validation">
-                <input type="text" name="author" class="form-control" id="author" value="<?php echo $author ?>" required>
+                <input type="text" name="member_id" class="form-control" id="member_id" value="<?php echo $member_id ?>" required>
               <div class="invalid-feedback">
-                Masukkan nama penulis.
+                Masukkan ID member.
                 </div>
               </div>
             </div>
 
             <div class="col-12">
-              <label for="published_date" class="form-label">Tanggal Terbit</label>
-              <input type="date" name="published_date" value="<?php echo $published_date ?>" class="form-control" id="published_date" required>
-              <div class="invalid-feedback">
-                Masukkan tanggal buku diterbitkan.
+              <label for="status" class="form-label">Status</label>
+              <select name="status" id="status" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" required>
+                <option value="available">Tersedia</option>
+                <option value="borrowed">Dipinjam</option>
+              </select>              
+            <div class="invalid-feedback">
+                Masukkan status.
               </div>
             </div>
 
-          <button class="w-100 btn btn-primary btn-lg" type="submit">Update buku</button>
+          <button class="w-100 btn btn-primary btn-lg" type="submit">Update data pinjaman</button>
         </form>
       </div>
     </div>

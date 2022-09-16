@@ -4,52 +4,57 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Member</title>
+    <title>Update Buku</title>
 </head>
 <body>
+    
 <?php
 include 'variable.php';
 $variant = variable();
 
 // define variables and set to empty values
-$first_nameErr = $last_nameErr = $emailErr = "";
-$first_name = $last_name = $emailErr = "";
+$member_idErr = $first_nameErr = $last_nameErr = $emailErr = "";
+$member_id = $first_name = $last_name = $email = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-  if (empty($_POST["first_name"])) {
-    $first_nameErr = "Nama depan harus diisi!";
+  if (empty($_POST["member_id"])) {
+    $member_idErr = "ID buku gagal diterima!";
   } else {
-    $first_name = test_input($_POST["first_name"]);
-    // check if first_name only contains letters and whitespace
-    if (!preg_match("/^[a-zA-Z-' ]*$/",$first_name)) {
-      $first_nameErr = "Nama tidak boleh mengandung angka dan simbol!";
-    }
+    $member_id = test_input($_POST["member_id"]);
   }
 
+  if (empty($_POST["first_name"])) {
+    $first_nameErr = "Judul buku harus diisi!";
+  } else {
+    $first_name = test_input($_POST["first_name"]);
+  }
 
   if (empty($_POST["last_name"])) {
-    $last_nameErr = "Nama belakang harus diisi!";
+    $last_nameErr = "Nama penulis harus diisi!";
   } else {
     $last_name = test_input($_POST["last_name"]);
     // check if last_name only contains letters and whitespace
     if (!preg_match("/^[a-zA-Z-' ]*$/",$last_name)) {
-      $last_nameErr = "Nama belakang tidak boleh mengandung angka dan simbol!";
+      $last_nameErr = "Nama penulis tidak boleh mengandung angka dan simbol!";
     }
   }
-
+  
   if (empty($_POST["email"])) {
-    $emailErr = "Email harus diisi";
+    $emailErr = "Tanggal terbit harus diisi!";
   } else {
     $email = test_input($_POST["email"]);
-    // check if e-mail address is well-formed
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $emailErr = "Format email tidak valid!";
-    }
+    // $parsed_date = date_parse($email);
+    // // check if e-mail address is well-formed
+    // if (!checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
+    //   $emailErr = "Format tanggal terbit tidak valid!";
+    // }
   }
 
-    if ($first_nameErr || $last_nameErr || $emailErr ) {
-        echo "<h2>Submisi member gagal:</h2>";
+
+    if ($member_idErr || $first_nameErr || $last_nameErr || $emailErr) {
+        echo "<h2>Submisi buku gagal:</h2>";
+        echo $member_idErr;
         echo "<br>";
         echo $first_nameErr;
         echo "<br>";
@@ -70,18 +75,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "INSERT INTO member (first_name, last_name, email)
-    VALUES ('".$first_name."', '".$last_name."', '".$email."')";
+    $sql = "UPDATE member SET 
+    first_name = '".$first_name."'
+    ,last_name = '".$last_name."'
+    ,email = '".$email."'
+    WHERE member_id=".$member_id;
 
     if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully";
+    echo "Record updated successfully";
     } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error updating record: " . $conn->error;
     }
 
     $conn->close();
 
-    echo "<h2>Data member berhasil diinput:</h2>";
+    echo "<h2>Data Buku berhasil diubah:</h2>";
     echo $first_name;
     echo "<br>";
     echo $last_name;

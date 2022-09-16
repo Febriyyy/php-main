@@ -1,3 +1,87 @@
+<?php
+include 'variable.php';
+$variant = variable();
+  
+$servername = $variant[0];
+$username = $variant[1];
+$password = $variant[2];
+$dbname = $variant[3];
+
+mysqli_report(MYSQLI_REPORT_OFF);
+
+$link = new mysqli($servername, $username, $password);
+if (!$link) {
+    die('Could not connect: ' . $link->connect_error);
+}
+
+// Make my_db the current database
+$db_selected = $link->select_db('library_db');
+
+if (!$db_selected) {
+  // If we couldn't, then it either doesn't exist, or we can't see it.
+  $sql = 'CREATE DATABASE library_db';
+
+// <script>console.log('test');</script>
+
+  if ($link->query($sql)) {
+      echo "Database library_db telah dibuat";
+  } else {
+      echo 'Error creating database: ' . $link->connect_error . "\n" ;
+  }
+} else {
+  echo "<script>console.log('[database sudah dibuat]');</script>";
+}
+
+mysqli_close($link);
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+ 
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+
+
+$book_sql = "CREATE TABLE `library_db`.`book` ( 
+  `book_id` INT NOT NULL AUTO_INCREMENT , 
+  `title` VARCHAR(50) NOT NULL , 
+  `author` VARCHAR(50) NOT NULL , 
+  `published_date` DATE NOT NULL, 
+  PRIMARY KEY (`book_id`)) ENGINE = InnoDB;";
+$member_sql = "CREATE TABLE `library_db`.`member` ( 
+  `member_id` INT NOT NULL AUTO_INCREMENT , 
+  `first_name` VARCHAR(50) NOT NULL , 
+  `last_name` VARCHAR(50) NOT NULL , 
+  `email` VARCHAR(50) NOT NULL, 
+  `register_date` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`member_id`)) ENGINE = InnoDB;";
+$borrow_sql = "CREATE TABLE `library_db`.`borrow` ( 
+  `borrow_id` INT NOT NULL AUTO_INCREMENT , 
+  `book_id` INT NOT NULL , 
+  `member_id` INT NOT NULL , 
+  `status` ENUM('available','borrowed') NOT NULL ,  
+  PRIMARY KEY (`borrow_id`)) ENGINE = InnoDB;";
+
+if ($conn->query($book_sql) === TRUE) {
+  echo "Table book created successfully";
+} else {
+  echo "<script>console.log('Error creating book table: table book sudah dibuat');</script>";
+}
+if ($conn->query($member_sql) === TRUE) {
+  echo "Table book created successfully";
+} else {
+  echo "<script>console.log('Error creating member table: table member sudah dibuat');</script>";
+}
+if ($conn->query($borrow_sql) === TRUE) {
+  echo "Table book created successfully";
+} else {
+  echo "<script>console.log('Error creating borrow table: table borrow sudah dibuat');</script>";
+}
+
+
+?>
+
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -58,6 +142,33 @@
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
       }
+
+        nav {
+      display: flex;
+      /* width: 84%; */
+      /* margin: auto; */
+      /* padding: 5px 0; */
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      
+    }
+
+    nav ul li {
+      display: inline-block;
+      list-style: none;
+      margin: 10px 20px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+    
+    nav ul li a:hover {
+      color: cornflowerblue;
+    }
     </style>
 
     
@@ -65,7 +176,14 @@
     <link href="form-validation.css" rel="stylesheet">
   </head>
   <body class="bg-light">
-    
+      <nav>
+        <img src="logo.jpeg" width="10%" class="logo" />
+        <ul class="p">
+          <li><a href="inputMember.php">DAFTAR</a></li>
+          <li><a href="inputBorrow.php">PINJAM BUKU</a></li>
+        </ul>
+      </nav>
+
 <div class="container">
   <main>
     <section class="py-5 text-center container">

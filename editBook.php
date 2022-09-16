@@ -9,6 +9,9 @@
 <body>
     
 <?php
+include 'variable.php';
+$variant = variable();
+
 // define variables and set to empty values
 $book_idErr = $titleErr = $authorErr = $published_dateErr = "";
 $book_id = $title = $author = $published_date = "";
@@ -60,10 +63,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo $published_dateErr;
         echo "<br>";
     } else {
-    $servername = "localhost";
-    $username = "ibrahim";
-    $password = "12345678";
-    $dbname = "library_db";
+    $servername = $variant[0];
+    $username = $variant[1];
+    $password = $variant[2];
+    $dbname = $variant[3];
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
